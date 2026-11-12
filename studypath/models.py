@@ -69,8 +69,10 @@ class SchedulingProblem:
         self.due_offsets = [(t.due - self.start).days for t in self.tasks]
         last_day = max(self.due_offsets, default=-1) + self.late_days
         
-        # slot_days are the day numbers of each study hour 
-        # (e.g. slot_days[3] == 2 means "Your 4th free hour (0 indexed) is on day 2 Wednesday")
+        # slot_days contain the day numbers of each study hour and the position marks the hour
+        # e.g. [0,0,1,2,2] means that (given that Monday is the start day) 
+        # the student's first two free hours are on Monday (0), their 3rd free hour is on Tuesday (1), 
+        # their 4th and 5th free hour is on Wednesday (2)
         self.slot_days = []
         for offset in range(0, last_day + 1):
             weekday = WEEKDAYS[(self.start + timedelta(days=offset)).weekday()]
@@ -102,16 +104,16 @@ class Schedule:
     def by_day(self) -> Dict[date, Dict[str, int]]:
         """Hours per task for each day, for display."""
         out: Dict[date, Dict[str, int]] = {}
-        for slot, task_idx in enumerate(self.assignment):
-            if task_idx is None:
+        for slot, task_index in enumerate(self.assignment):
+            if task_index is None:
                 continue
             day = self.problem.day_date(self.problem.slot_days[slot])
-            name = self.problem.tasks[task_idx].name
+            name = self.problem.tasks[task_index].name
             out.setdefault(day, {})
             out[day][name] = out[day].get(name, 0) + 1
         return out
 
-    def pretty(self) -> str:
+    def printable(self) -> str:
         """Creates a printable text version"""
         lines = [f"{self.algorithm} schedule"]
         for day, hours in sorted(self.by_day().items()):
@@ -122,7 +124,7 @@ class Schedule:
 
 def remaining_after(problem: SchedulingProblem, assignment: Sequence[Optional[int]]) -> List[int]:
     remaining = [t.hours for t in problem.tasks]
-    for task_idx in assignment:
-        if task_idx is not None:
-            remaining[task_idx] -= 1
+    for task_index in assignment:
+        if task_index is not None:
+            remaining[task_index] -= 1
     return remaining
