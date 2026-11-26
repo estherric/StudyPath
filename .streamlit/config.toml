@@ -1,0 +1,14 @@
+# app theme
+
+[theme]
+primaryColor = "#D9485F"
+
+[theme.light]
+backgroundColor = "#F8F9FC"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#202124"
+
+[theme.dark]
+backgroundColor = "#111318"
+secondaryBackgroundColor = "#1B1E24"
+textColor = "#F4F4F5"
